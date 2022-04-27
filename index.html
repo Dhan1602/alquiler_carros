@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -49,6 +50,7 @@
             background-color: black;
             width: 100vw;
         }
+
         .containers {
             margin-left: 20px;
             font-size: 20px;
@@ -80,8 +82,9 @@
         button:active {
             background-color: rgb(96, 96, 96);
         }
-        </style>
+    </style>
 </head>
+
 <body>
     <header>
         <span><strong>Alquiler de carros</strong></span>
@@ -109,71 +112,84 @@
     <div class="containers" id="registrados" style="display: none">
         <h1>Carros Alquilados</h1>
         <table border cellpadding="10" cellspacing="0" id="listar">
-        <tr id="0">
-            <td>Fecha</td>
-            <td>Marca</td>
-            <td>Modelo</td>
-            <td>Color</td>
-            <td>Valor por hora</td>
-            <td>Cantidad de horas</td>
-            <td>Valor total</td>
-            <td>imagen</td>
-            
-            </td>
-        </tr>
-    </table>
+            <tr id="0">
+                <td>Fecha</td>
+                <td>Marca</td>
+                <td>Modelo</td>
+                <td>Color</td>
+                <td>Valor por hora</td>
+                <td>Cantidad de horas</td>
+                <td>Valor total</td>
+                <td>imagen</td>
+
+                </td>
+            </tr>
+        </table>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
-    $(document).ready(function(){
-        var a = 0;
-        $("#registrar").click(function(e){
-            e.preventDefault();
-            var formulario = $("#form").serialize();
-            $.ajax({
-                url:"/alquiler",
-                type: "POST",
-                data: formulario,
-                success: function(respuesta){
-                    a++;
-                    $("#registrados").show();
-                    $("#listar").append(respuesta);
-                }
+        $(document).ready(function () {
+            var a = 0;
+            var deshabilitado = false;
+            var valor;
+            $("#registrar").click(function (e) {
+                e.preventDefault();
+                var formulario = $("#form").serialize();
+                $.ajax({
+                    url: "/alquiler",
+                    type: "POST",
+                    data: formulario,
+                    success: function (respuesta) {
+                        a++;
+                        $("#registrados").show();
+                        $("#listar").append(respuesta);
+                    }
 
+                });
+
+            });
+
+            $("body").on("click", ".actualizar", function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: "/actualizar",
+                    type: "POST",
+                    success: function (respuesta) {
+                        if (deshabilitado == true) {
+                            $(e.target).parent().parent().children().children("input").prop("disabled", true);
+                            alert("Se ha deshabilitado la opcion de actualizar");
+                            deshabilitado = false;
+                        } else if (deshabilitado == false) {
+                            $(e.target).parent().parent().children().children("input").prop("disabled", false);
+                            alert("Se ha hablitado la opcion de actualizar");
+                            deshabilitado = true;
+                        }
+                        console.log(respuesta)
+                    }
+                })
             })
 
-        })
-
-        $(".actualizar").click(function(e){
-            e.preventDefault();
-            $.ajax({
-                url:"/actualizar",
-                type:"POST",
-                data:"",
-                success:function(respuesta){
-
-                }
+            $("body").on("click", ".eliminar", function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: "/eliminar",
+                    type: "POST",
+                    success: function (respuesta) {
+                        alert(respuesta);
+                        $(e.target).parent().parent().remove()
+                        // valor = $(e).val();
+                        // alert(valor)
+                        // $("#"+valor).remove();
+                    }
+                })
             })
-        })
 
-        $(".eliminar").click(function(e){
-            e.preventDefault();
-            $.ajax({
-                url: "/eliminar",
-                type: "POST",
-                success:function(respuesta){
-                    alert(respuesta);
-                    $(this).parent().remove()
-                    
-                }
-            })
-        })
 
-                 
-        
-    })
+
+        })
     </script>
-    
+
 </body>
+
 </html>
